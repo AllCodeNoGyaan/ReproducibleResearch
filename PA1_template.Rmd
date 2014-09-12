@@ -43,7 +43,7 @@ Fork/clone the GitHub repository created for this assignment. You will submit th
 
 NOTE: The GitHub repository also contains the dataset for the assignment so you do not have to download the data separately.
 
-### run PA1_driver.R (a wrapper), which starts knit2html, then sets up and loads required libraries used by the script
+#### run PA1_driver.R (a wrapper), which starts knit2html, then sets up and loads required libraries used by the script
 
 
 ```{r, message=FALSE}
@@ -54,7 +54,7 @@ library("chron")
 library("scales")
 library("mice")
 ```
-### Set interval storage and file path
+#### Set interval storage and file path
 
 
 ```{r}
@@ -64,7 +64,7 @@ timeForSteps <- matrix(NA, nrow=288, ncol=1, dimnames=list(NULL,"time"))
 activityDir <- "K:/COURSES/JHU_DataScience/Statistical_Inference"
 pathToDataSet <- paste(activityDir, 'activity.csv', sep='/')
 ```
-### Load the activity data
+#### Load the activity data
 
 
 ```{r}
@@ -78,8 +78,8 @@ All the values for each day by interval are added together.
 stepsPerDay <- ddply(activity, .(date), summarize, totalSteps=sum(steps, na.rm=TRUE))
 head(stepsPerDay,10)
 ```
-What is the mean and median total number of steps taken per day?
-----------------------------------------------------------------
+### What is the mean and median total number of steps taken per day?
+
 
 ```{r}
 mStepsPerDay[1,1] <- mean(stepsPerDay$totalSteps)
@@ -94,22 +94,22 @@ set the format for date types
 stepsPerDay$date <- as.Date(stepsPerDay$date, "%Y-%m-%d")
 head(stepsPerDay$date)
 ```
-Make a histogram of the total steps taken each day
---------------------------------------------------
+#### make a histogram of the total steps taken each day
+
 
 ```{r, echo=TRUE}
     ggplot(stepsPerDay, aes(x=date, y=totalSteps)) +
         geom_bar(fill="lightblue", stat="identity") +
         labs(x="Date", y="Total Steps", title="Total Steps per Day")
 ```             
-what is the daily average activity pattern?
-===========================================
+### What is the daily average activity pattern?
+
 
 ```{r}
 stepsPerInterval <- ddply(activity, .(interval), summarize, avgSteps=mean(steps, na.rm=TRUE))
 ```
-1. make a time series plot of 5-minute interval vs average steps
-----------------------------------------------------------------
+#### 1. make a time series plot of 5-minute interval vs average steps
+
 
 ```{r, echo=FALSE}
 stepsPerInterval <- cbind(stepsPerInterval,timeForSteps)
@@ -138,14 +138,14 @@ stepsPerInterval$time <- as.POSIXct(strptime(paste("2012-10-01", stepsPerInterva
        
 ``` 
 
-2. find the 5-minute interval over all days with the maximum steps
-------------------------------------------------------------------
+#### 2. find the 5-minute interval over all days with the maximum steps
+
 ```{r}
 maxstepsPerInterval <- stepsPerInterval$interval[which.max(stepsPerInterval$avgSteps)]
 print(sprintf("interval with the maximum counts is: %d", maxstepsPerInterval))
 ```
-Imputting missing values
-========================
+### Imputting missing values
+
 
 1. fill in the missing data from the original dataset using 'MICE'
 -----------------------------------------------------------------
@@ -158,18 +158,18 @@ qMissingActivity <- sum(is.na(activity$steps), na.rm=FALSE)
 print(sprintf("Total missing values: %d", qMissingActivity))
 ```
 
-2. devise a stategy for filling in the missing data
----------------------------------------------------
+#### 2. devise a stategy for filling in the missing data
+
 ```{r}
 newActivityNoBlanks <- mice(activity, printFlag=FALSE)
 ```
-3. build a new dataset of equal size, but without missing values
-----------------------------------------------------------------
+#### 3. build a new dataset of equal size, but without missing values
+
 ```{r}
 newActivity <- complete(newActivityNoBlanks)
 ```
-4. make a histogram of the modified data for the total steps per day and calculate the mean and median
-------------------------------------------------------------------------------------------------------
+#### 4. make a histogram of the modified data for the total steps per day and calculate the mean and median
+
 
 ```{r, echo=FALSE}  
 newStepsPerDay <- ddply(newActivity, .(date), summarize, totalSteps=sum(steps))
@@ -221,19 +221,19 @@ use of the MICE algorithm.
                          labels=date_format('%d\n%a\n%b')) +
         theme(legend.position = "none") 
 ```
-Are there differences in the activity pattern between weekdays and weekends?
-============================================================================
+### Are there differences in the activity pattern between weekdays and weekends?
 
-1. Make a new factor variable with two levels - weekday and weekend
--------------------------------------------------------------------
+
+#### 1. make a new factor variable with two levels - weekday and weekend
+
 
 ```{r}
 newActivity$day <- ifelse (weekdays(as.Date(newActivity$date)) %in% 
                                 c("Saturday", "Sunday"), "weekend", "weekday")
 newActivity$day <- as.factor(newActivity$day)
 ```
-Make a panel plot
------------------
+#### make a panel plot
+
 
 ```{r, echo=TRUE}
         newStepsPerInterval <- ddply(newActivity, .(interval, day),

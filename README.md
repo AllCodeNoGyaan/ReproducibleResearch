@@ -1,4 +1,0 @@
-ReproducibleResearch
-====================
-
-JHU ReproResearch course
